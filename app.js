@@ -234,7 +234,7 @@ async function triggerTracking(id) {
         if (response.ok) {
             fetchAlumni();
             showToast('Memulai pelacakan...', 'info');
-            setTimeout(fetchAlumni, 4000); // Refresh after a few seconds
+            startPolling(); // Mulai polling otomatis
         } else {
             const err = await response.json();
             showToast(`Gagal melacak: ${err.detail}`, 'error');
@@ -243,6 +243,25 @@ async function triggerTracking(id) {
         console.error('Error triggering tracking:', e);
         showToast('Terjadi kesalahan jaringan saat melacak.', 'error');
     }
+}
+
+// Polling Logic: Cek status otomatis setiap beberapa detik
+let pollingInterval = null;
+function startPolling() {
+    if (pollingInterval) return;
+    
+    console.log("Polling started...");
+    pollingInterval = setInterval(async () => {
+        await fetchAlumni();
+        
+        // Berhenti polling jika tidak ada lagi yang berstatus "Sedang Melacak..."
+        const isStillTracking = allAlumniData.some(a => a.status === 'Sedang Dilacak...');
+        if (!isStillTracking) {
+            console.log("Polling stopped - No active tracking.");
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+    }, 5000); // Cek setiap 5 detik
 }
 
 // Tab Filtering Logic
@@ -284,7 +303,7 @@ async function triggerAllTracking() {
                 await fetch(`${API_URL}/alumni/${alumni.id}/track`, { method: 'POST' });
             }
             fetchAlumni();
-            setTimeout(fetchAlumni, 5000);
+            startPolling(); // Mulai polling otomatis untuk pelacakan massal
             showToast('Semua perintah pelacakan idle berhasil diantrikan!', 'success');
         });
         
