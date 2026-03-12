@@ -17,7 +17,13 @@ if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
         SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
     )
 else:
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    # pool_pre_ping=True sangat penting untuk Render agar koneksi yang putus dideteksi otomatis
+    # pool_recycle=1800 memastikan koneksi lama di-refresh sebelum expired
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL, 
+        pool_pre_ping=True, 
+        pool_recycle=1800
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

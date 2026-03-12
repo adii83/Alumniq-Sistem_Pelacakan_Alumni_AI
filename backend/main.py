@@ -176,17 +176,16 @@ def hitung_bobot_kecocokan(alumni: models.Alumni, kandidat: dict) -> tuple[int, 
     return total_skor, match_nama
 
 
-def mock_scraping_task(alumni_id: int, db: Session):
+def mock_scraping_task(alumni_id: int): # Tidak lagi butuh db dari argumen
     """
-    Pelacakan berbasis Yahoo Search:
-    - Membuat beberapa query (nama+kampus, nama kampus natural, nama+prodi)
-    - Mengambil banyak kandidat
-    - Menghitung skor kecocokan setiap kandidat
-    - Menyimpan kandidat ke TrackingResult
+    Pelacakan berbasis Yahoo Search
     """
-    alumni = db.query(models.Alumni).filter(models.Alumni.id == alumni_id).first()
-    if not alumni:
-        return
+    from database import SessionLocal
+    db = SessionLocal() # Buat session sendiri untuk background task
+    try:
+        alumni = db.query(models.Alumni).filter(models.Alumni.id == alumni_id).first()
+        if not alumni:
+            return
 
     # Hapus hasil pelacakan lama agar tidak menumpuk saat dilacak ulang
     db.query(models.TrackingResult).filter(models.TrackingResult.alumni_id == alumni_id).delete()
@@ -359,6 +358,12 @@ def mock_scraping_task(alumni_id: int, db: Session):
     
     alumni.last_tracked = datetime.now()
     db.commit()
+    db.close() # Pastikan ditutup manual
+    print(f"[Done] Pelacakan selesai untuk ID: {alumni_id}")
+except Exception as e:
+    print(f"[Error] Gagal saat pelacakan background: {e}")
+    if 'db' in locals():
+        db.close()
 
 @app.post("/alumni/", response_model=schemas.AlumniResponse)
 def create_alumni(alumni: schemas.AlumniCreate, db: Session = Depends(get_db)):
@@ -391,7 +396,8 @@ def trigger_tracking(alumni_id: int, background_tasks: BackgroundTasks, db: Sess
     db.commit()
 
     # Add the scraping job to background tasks
-    background_tasks.add_task(mock_scraping_task, alumni_id, db)
+    # JANGAN teruskan 'db' karena akan ditutup oleh FastAPI sesaat setelah return
+    background_tasks.add_task(mock_scraping_task, alumni_id)
     
     return {"message": f"Tracking job started for {alumni.name}"}
 
