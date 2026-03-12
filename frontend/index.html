@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AlumniQ - Sistem Pelacakan Alumni AI</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f5f7fb;
+      }
+      .alumniq-underline {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        font-family: "Playfair Display", serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #fefcbf; /* Lightened for dark navbar */
+      }
+      .alumniq-underline span {
+        line-height: 1.2;
+        position: relative;
+      }
+      /* Huruf q kreatif */
+      .creative-q {
+        display: inline-block;
+        position: relative;
+        color: #b76e3c; /* warna emas */
+        font-size: 2.6rem; /* sedikit lebih besar */
+        transform: rotate(3deg) translateY(-2px);
+        margin-left: -3px;
+        text-shadow: 0 2px 5px rgba(183, 110, 60, 0.3);
+      }
+      /* Ekor melengkung di kanan bawah */
+      .creative-q::after {
+        content: "";
+        position: absolute;
+        bottom: -4px;
+        right: -10px;
+        width: 18px;
+        height: 18px;
+        border-right: 3px solid #b76e3c;
+        border-bottom: 3px solid #b76e3c;
+        border-radius: 0 0 15px 0;
+        transform: rotate(-5deg);
+        opacity: 0.9;
+      }
+      /* Titik aksen di atas */
+      .creative-q::before {
+        content: "•";
+        position: absolute;
+        top: -8px;
+        right: -6px;
+        font-size: 1.5rem;
+        color: #d4af37;
+        text-shadow: 0 0 8px #f1c40f;
+        line-height: 1;
+      }
+      .underline-svg {
+        margin-top: -15px;
+        width: 100%;
+        height: auto;
+      }
+      /* Warna aksen premium: dark gold */
+      .premium-gold {
+        color: #a65d2c;
+      }
+      .premium-bg {
+        background: linear-gradient(145deg, #b76e3c, #9a4e1f);
+      }
+      .premium-border {
+        border-color: #d4a373;
+      }
+      .premium-ring:focus {
+        --tw-ring-color: #b76e3c;
+      }
+      /* Custom checkbox modern */
+      .platform-cb {
+        appearance: none;
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 2px solid #d1d5db;
+        border-radius: 0.35rem;
+        background-color: white;
+        transition: all 0.15s;
+        cursor: pointer;
+        position: relative;
+      }
+      .platform-cb:checked {
+        background-color: #b76e3c;
+        border-color: #b76e3c;
+      }
+      .platform-cb:checked::after {
+        content: "✓";
+        position: absolute;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: bold;
+        left: 2px;
+        top: -3px;
+      }
+      .platform-cb:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(183, 110, 60, 0.25);
+      }
+      /* Card premium */
+      .premium-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        box-shadow:
+          0 20px 35px -10px rgba(0, 0, 0, 0.1),
+          0 5px 15px -5px rgba(0, 0, 0, 0.05);
+        transition: all 0.25s ease;
+      }
+      .premium-card:hover {
+        box-shadow: 0 30px 45px -15px rgba(0, 0, 0, 0.15);
+        transform: translateY(-3px);
+      }
+      /* Input premium */
+      .premium-input {
+        border: 1.5px solid #e9edf2;
+        border-radius: 1rem;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
+        background-color: #ffffff;
+        transition: all 0.2s;
+      }
+      .premium-input:focus {
+        border-color: #b76e3c;
+        box-shadow: 0 0 0 4px rgba(183, 110, 60, 0.15);
+        outline: none;
+      }
+      /* Tombol aksi seragam */
+      .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.4rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        transition: all 0.15s;
+        white-space: nowrap;
+        border: 1px solid transparent;
+      }
+      .btn-action i {
+        font-size: 1rem;
+        line-height: 1;
+      }
+      /* Badge status */
+      .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.3rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        border: 1px solid currentColor;
+      }
+      .table-container {
+        border-radius: 12px;
+        overflow: hidden;
+        min-height: 400px;
+      }
+      /* Tabel modern */
+      .table-modern th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+        background-color: #fafbfc;
+        border-bottom: 2px solid #eaeef2;
+      }
+      .table-modern td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #edf2f7;
+      }
+      .table-modern tr:last-child td {
+        border-bottom: none;
+      }
+      .table-modern tbody tr:hover {
+        background-color: #fefaf6;
+      }
+      /* Tab premium */
+      .tab-premium {
+        padding: 0.8rem 1.8rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s;
+        color: #6b7280;
+      }
+      .tab-premium:hover {
+        color: #b76e3c;
+        border-bottom-color: #f1d5b5;
+      }
+      .tab-premium.active {
+        color: #b76e3c;
+        border-bottom-color: #b76e3c;
+      }
+    </style>
+  </head>
+  <body class="text-gray-800 antialiased min-h-screen flex flex-col">
+    <!-- Navbar ultra premium dengan blur -->
+    <nav
+      class="bg-slate-900/80 backdrop-blur-xl text-white sticky top-0 z-50 border-b border-slate-700/30 shadow-2xl"
+    >
+      <div class="max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-14">
+        <div class="flex justify-between h-16 items-center">
+          <div class="flex items-center">
+            <div class="alumniq-underline">
+              <span>Alumni<span class="creative-q">q</span></span>
+              <svg
+                class="underline-svg"
+                viewBox="0 0 200 20"
+                width="200"
+                height="20"
+              >
+                <path
+                  d="M10,15 Q50,0 90,15 T170,15"
+                  stroke="#b76e3c"
+                  stroke-width="3"
+                  fill="none"
+                  stroke-linecap="round"
+                />
+                <circle cx="130" cy="12" r="3" fill="#b76e3c" />
+              </svg>
+            </div>
+          </div>
+          <div class="text-xs text-slate-400 font-medium">
+            Intelligent Tracking System
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main
+      class="flex-grow max-w-[1600px] mx-auto px-6 sm:px-10 lg:px-14 py-10 w-full"
+    >
+      <!-- Header dengan aksen garis ganda -->
+      <div
+        class="mb-10 flex flex-col md:flex-row md:justify-between md:items-end border-b border-slate-200 pb-5"
+      >
+        <div>
+          <h1
+            class="text-4xl font-bold text-slate-900 leading-tight tracking-tight"
+          >
+            Intelligent Alumni Tracking System
+          </h1>
+          <p class="mt-2 text-base text-slate-500 font-light">
+            Temukan dan Lacak Alumni Kampus Anda di Berbagai Platform Publik
+          </p>
+        </div>
+      </div>
+
+      <!-- Form tambah target dengan layout grid 6 kolom lebih proporsional -->
+      <div
+        class="bg-white/90 backdrop-blur-sm rounded-2xl border border-slate-200/80 shadow-xl p-8 mb-10 premium-card"
+      >
+        <form
+          id="addAlumniForm"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 items-end"
+        >
+          <!-- Nama -->
+          <div class="md:col-span-1">
+            <label
+              class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5"
+              >Nama Lengkap</label
+            >
+            <input
+              type="text"
+              id="name"
+              required
+              class="w-full premium-input"
+              placeholder="Contoh: Marsel Putra"
+            />
+          </div>
+          <!-- Kampus -->
+          <div class="md:col-span-1">
+            <label
+              class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5"
+              >Kampus Afiliasi</label
+            >
+            <input
+              type="text"
+              id="campus"
+              required
+              value="Universitas Muhammadiyah Malang"
+              class="w-full premium-input"
+            />
+          </div>
+          <!-- Prodi -->
+          <div class="md:col-span-1">
+            <label
+              class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5"
+              >Program Studi</label
+            >
+            <input
+              type="text"
+              id="major"
+              required
+              value="Informatika"
+              class="w-full premium-input"
+            />
+          </div>
+          <!-- Tahun Lulus -->
+          <div class="md:col-span-1">
+            <label
+              class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5"
+              >Tahun Lulus</label
+            >
+            <input
+              type="text"
+              id="graduation_year"
+              placeholder="Opsional"
+              class="w-full premium-input"
+            />
+          </div>
+          <!-- Kolom Platform (lebar responsive) -->
+          <div class="md:col-span-2 lg:col-span-3 mt-2">
+            <div class="flex items-center justify-between mb-3">
+              <label
+                class="block text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                >Pilih Sumber Platform Pelacakan</label
+              >
+            </div>
+            <div
+              class="flex flex-wrap gap-x-6 gap-y-3 items-center text-sm text-slate-700"
+            >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input type="checkbox" value="LinkedIn" class="platform-cb" />
+                LinkedIn</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  value="Google Scholar"
+                  class="platform-cb"
+                />
+                Google Scholar</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  value="ResearchGate"
+                  class="platform-cb"
+                />
+                ResearchGate</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input type="checkbox" value="ORCID" class="platform-cb" />
+                ORCID</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  value="Website Perusahaan"
+                  class="platform-cb"
+                />
+                Website Perusahaan</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input type="checkbox" value="GitHub" class="platform-cb" />
+                GitHub</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input type="checkbox" value="Kaggle" class="platform-cb" />
+                Kaggle</label
+              >
+              <label class="flex items-center gap-2 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  value="Google Umum"
+                  class="platform-cb"
+                />
+                Google Umum</label
+              >
+              <button
+                type="button"
+                id="toggleAllBtn"
+                onclick="toggleAllPlatforms()"
+                class="text-amber-700 hover:text-amber-900 font-medium ml-2 text-xs bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200 transition-all shadow-sm"
+              >
+                Check Semua
+              </button>
+            </div>
+          </div>
+          <!-- Tombol submit di kanan -->
+          <div class="md:col-span-2 lg:col-span-1 flex justify-end items-end">
+            <button
+              type="submit"
+              id="submitBtn"
+              class="w-full md:w-auto px-8 py-3.5 premium-bg hover:opacity-90 text-white text-sm font-semibold rounded-xl shadow-lg shadow-amber-900/20 transition-all flex items-center justify-center gap-2 transform hover:scale-[1.02]"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                ></path>
+              </svg>
+              <span id="btnText">Simpan Target</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Statistik Cards dengan tinggi seragam dan ikon -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
+        <div class="premium-card rounded-2xl p-5 border-l-4 border-l-stone-500">
+          <p
+            class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1"
+          >
+            Total Target
+          </p>
+          <div class="text-4xl font-bold text-slate-800" id="stat-total">0</div>
+        </div>
+        <div
+          class="premium-card rounded-2xl p-5 border-l-4 border-l-emerald-500"
+        >
+          <p
+            class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1"
+          >
+            Teridentifikasi
+          </p>
+          <div class="text-4xl font-bold text-emerald-600" id="stat-identified">
+            0
+          </div>
+        </div>
+        <div class="premium-card rounded-2xl p-5 border-l-4 border-l-amber-500">
+          <p
+            class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1"
+          >
+            Perlu Verifikasi
+          </p>
+          <div class="text-4xl font-bold text-amber-600" id="stat-verify">
+            0
+          </div>
+        </div>
+        <div class="premium-card rounded-2xl p-5 border-l-4 border-l-slate-400">
+          <p
+            class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1"
+          >
+            Gagal / Belum
+          </p>
+          <div class="text-4xl font-bold text-slate-500" id="stat-untracked">
+            0
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter tabs dengan scroll halus dan batch button yang rapi -->
+      <div
+        class="flex flex-wrap items-center justify-between border-b border-slate-200 mb-6"
+        id="filter-tabs"
+      >
+        <div class="flex overflow-x-auto hide-scrollbar">
+          <button onclick="filterTable('Semua')" class="tab-premium tab-btn">
+            Semua Data
+          </button>
+          <button
+            onclick="filterTable('Teridentifikasi')"
+            class="tab-premium tab-btn"
+          >
+            Teridentifikasi
+          </button>
+          <button
+            onclick="filterTable('Perlu Verifikasi Manual')"
+            class="tab-premium tab-btn"
+          >
+            Perlu Verifikasi Manual
+          </button>
+          <button
+            onclick="filterTable('Belum Ditemukan')"
+            class="tab-premium tab-btn"
+          >
+            Belum Ditemukan / Idle
+          </button>
+        </div>
+        <div class="flex items-center ml-4">
+          <button
+            id="batchTrackBtn"
+            onclick="triggerAllTracking()"
+            class="hidden premium-bg text-white px-6 py-2 rounded-full text-xs font-semibold shadow-md transition-all hover:shadow-lg hover:scale-105 flex items-center gap-2"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              ></path>
+            </svg>
+            Lacak Ulang Semua Idle
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabel dengan desain modern dan kolom proporsional -->
+      <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden premium-card"
+      >
+        <div class="overflow-x-auto">
+          <table class="w-full text-left table-modern">
+            <thead>
+              <tr>
+                <th class="px-6 py-4 w-1/4">Nama Alumni</th>
+                <th class="px-6 py-4 w-1/5">Prodi / Lulus</th>
+                <th class="px-6 py-4 w-1/3">Informasi Hasil Pelacakan</th>
+                <th class="px-6 py-4 text-center w-1/6">Status Pelacakan</th>
+                <th class="px-6 py-4 text-center w-56">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="alumni-table-body" class="divide-y divide-slate-100">
+              <!-- akan diisi oleh JS -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Loading state -->
+        <div id="loading" class="hidden py-16 text-center">
+          <div
+            class="inline-block animate-spin w-10 h-10 border-4 border-amber-600 border-t-transparent rounded-full mb-4"
+          ></div>
+          <p class="text-sm text-slate-500 font-medium">
+            Memuat data dari server...
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal: Tinjau Simpan Bukti Pelacakan -->
+    <div
+      id="detailModal"
+      class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"
+      >
+        <div
+          class="flex items-center justify-between px-7 py-5 border-b border-slate-100"
+        >
+          <div>
+            <h2 class="text-lg font-bold text-slate-900" id="modal-title">
+              Tinjau dan Simpan Bukti
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5" id="modal-subtitle">
+              Pilih sumber terpercaya lalu simpan sebagai Bukti Pelacakan
+            </p>
+          </div>
+          <button
+            onclick="closeDetailModal()"
+            class="text-slate-400 hover:text-slate-700 transition-colors text-3xl leading-none font-light"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="overflow-y-auto flex-1 px-7 py-6 space-y-5">
+          <div>
+            <p
+              class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3"
+            >
+              Tautan yang Ditemukan
+            </p>
+            <div id="modal-platform-links" class="flex flex-wrap gap-2"></div>
+          </div>
+          <div>
+            <p
+              class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2"
+            >
+              Hasil Pelacakan Saat Ini
+            </p>
+            <div
+              id="modal-current-result"
+              class="text-sm text-slate-700 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100"
+            >
+              -
+            </div>
+          </div>
+          <div>
+            <label
+              class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2"
+              >Catatan / Bukti Valid yang Dipilih</label
+            >
+            <textarea
+              id="modal-notes"
+              rows="3"
+              class="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-slate-50 resize-none"
+              placeholder="Contoh: Ditemukan di LinkedIn sebagai Software Engineer di PT XYZ. Profil sesuai alumni target."
+            ></textarea>
+          </div>
+        </div>
+        <div
+          class="px-7 py-5 border-t border-slate-100 flex flex-wrap gap-3 justify-between bg-slate-50 rounded-b-2xl"
+        >
+          <button
+            onclick="modalMarkNotFound()"
+            class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 transition-colors"
+          >
+            Tandai Tidak Ditemukan
+          </button>
+          <button
+            onclick="modalSaveVerified()"
+            class="px-6 py-2 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors shadow-sm"
+          >
+            Simpan Bukti
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pastikan script app.js tetap sama -->
+    <script src="app.js"></script>
+    <style>
+      /* Hilangkan scrollbar di tabs */
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </body>
+</html>

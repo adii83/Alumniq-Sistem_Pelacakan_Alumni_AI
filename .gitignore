@@ -1,0 +1,41 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
+venv/
+.env/
+.env.*
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Python build
+build/
+dist/
+*.egg-info/
+
+# Node (kalau nanti frontend pakai npm)
+node_modules/
+
+# IDE
+.idea/
+
+# Output/debug files
+output*.txt
+
+# Misc
+*.tmp
+*.swp
