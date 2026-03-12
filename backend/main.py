@@ -17,9 +17,16 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Sistem Pelacakan Alumni API")
 
 # Configure CORS for frontend access
+origins = [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:3000",
+    "https://adii83.github.io",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # For dev, allow all. Change in prod.
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -106,7 +113,7 @@ def fetch_data_dari_internet(query: str, max_pages: int = 3) -> list[dict]:
             if not ada_hasil:
                 break
 
-            time.sleep(1.0)
+            time.sleep(0.5) # Reduced sleep for faster tracking on cloud
         except Exception as e:
             print(f"Gagal menarik halaman {page + 1}: {e}")
             break
@@ -185,7 +192,7 @@ def mock_scraping_task(alumni_id: int, db: Session):
     db.query(models.TrackingResult).filter(models.TrackingResult.alumni_id == alumni_id).delete()
     db.commit()
 
-    time.sleep(2)
+    time.sleep(1) # Reduced initial delay
 
     # Query tahap 1–3 mengikuti pola temanmu
     query1 = f"\"{alumni.name}\" {alumni.campus or ''}".strip()
@@ -309,23 +316,22 @@ def mock_scraping_task(alumni_id: int, db: Session):
         persen_kokoh = (jumlah_kokoh / total_kandidat * 100) if total_kandidat > 0 else 0
         
         # Keputusan berdasarkan persentase
-        if persen_kokoh > 70 and jumlah_kokoh >= 1:
-            status_akhir = "Teridentifikasi"
-        elif persen_kokoh > 0 or skor_tertinggi >= 50:
+        # Keputusan: User minta 'manual saja'. 
+        # Jadi kita selalu set 'Perlu Verifikasi Manual' jika ada hasil, 
+        # JANGAN otomatis Teridentifikasi agar user bisa cek kartu satu-satu.
+        if jumlah_kokoh >= 1 or skor_tertinggi >= 40:
             status_akhir = "Perlu Verifikasi Manual"
         else:
             status_akhir = "Belum Ditemukan"
             
         alumni.status = status_akhir
         alumni.graduation_year = tahun_diperbarui
-        if status_akhir != "Belum Ditemukan":
-            extracted = (kandidat_terbaik.get("sinyal_pekerjaan") or kandidat_terbaik.get("sinyal_nama") or "")
-            # Bersihkan prefix [Skor XX%] jika ada
-            import re as re_clean
-            cleaned = re_clean.sub(r'^\[Skor \d+%\]\s*', '', extracted).strip()
-            alumni.job = cleaned or "Informasi hasil pelacakan"
-            alumni.job_source = kandidat_terbaik["platform"]
-            alumni.job_url = kandidat_terbaik.get("link")
+        
+        # JANGAN otomatis isi job dan source jika mau proses manual 100%.
+        # Biarkan user yang klik 'Simpan Bukti' di modal.
+        alumni.job = "Belum diverifikasi (Tinjau Hasil)"
+        alumni.job_source = None
+        alumni.job_url = None
             
         # TAHAP 8: SIMPAN BUKTI AUDIT
         for pot in kandidat_unik[:10]: # Max 10 log per session
